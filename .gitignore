@@ -31,7 +31,9 @@ yarn-error.*
 *.pem
 
 # local env files
+.env
 .env*.local
+.env.local
 
 # typescript
 *.tsbuildinfo
@@ -41,3 +43,9 @@ app-example
 # generated native folders
 /ios
 /android
+
+# Backend uploads and restored images
+backend/uploads/*
+backend/restored/*
+!backend/uploads/.gitkeep
+!backend/restored/.gitkeep

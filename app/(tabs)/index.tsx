@@ -1,98 +1,269 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
-
-import { HelloWave } from '@/components/hello-wave';
-import ParallaxScrollView from '@/components/parallax-scroll-view';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { Link } from 'expo-router';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
+import { StatusBar } from 'expo-status-bar';
+import React, { useEffect, useRef } from 'react';
+import { Animated, Easing, Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 export default function HomeScreen() {
-  return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12',
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <Link href="/modal">
-          <Link.Trigger>
-            <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-          </Link.Trigger>
-          <Link.Preview />
-          <Link.Menu>
-            <Link.MenuAction title="Action" icon="cube" onPress={() => alert('Action pressed')} />
-            <Link.MenuAction
-              title="Share"
-              icon="square.and.arrow.up"
-              onPress={() => alert('Share pressed')}
-            />
-            <Link.Menu title="More" icon="ellipsis">
-              <Link.MenuAction
-                title="Delete"
-                icon="trash"
-                destructive
-                onPress={() => alert('Delete pressed')}
-              />
-            </Link.Menu>
-          </Link.Menu>
-        </Link>
+  const router = useRouter();
 
-        <ThemedText>
-          {`Tap the Explore tab to learn more about what's included in this starter app.`}
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          {`When you're ready, run `}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+  // Animation values for stars
+  const star1Opacity = useRef(new Animated.Value(0)).current;
+  const star2Opacity = useRef(new Animated.Value(0)).current;
+  const star3Opacity = useRef(new Animated.Value(0)).current;
+  const star4Opacity = useRef(new Animated.Value(0)).current;
+
+  const star1Scale = useRef(new Animated.Value(0.5)).current;
+  const star2Scale = useRef(new Animated.Value(0.5)).current;
+  const star3Scale = useRef(new Animated.Value(0.5)).current;
+  const star4Scale = useRef(new Animated.Value(0.5)).current;
+
+  useEffect(() => {
+    // Create twinkling animation for each star
+    const createTwinkle = (opacity: Animated.Value, scale: Animated.Value, delay: number) => {
+      return Animated.loop(
+        Animated.sequence([
+          Animated.delay(delay),
+          Animated.parallel([
+            Animated.timing(opacity, {
+              toValue: 1,
+              duration: 800,
+              easing: Easing.ease,
+              useNativeDriver: true,
+            }),
+            Animated.timing(scale, {
+              toValue: 1,
+              duration: 800,
+              easing: Easing.ease,
+              useNativeDriver: true,
+            }),
+          ]),
+          Animated.parallel([
+            Animated.timing(opacity, {
+              toValue: 0,
+              duration: 800,
+              easing: Easing.ease,
+              useNativeDriver: true,
+            }),
+            Animated.timing(scale, {
+              toValue: 0.5,
+              duration: 800,
+              easing: Easing.ease,
+              useNativeDriver: true,
+            }),
+          ]),
+        ])
+      );
+    };
+
+    // Start animations with different delays for staggered effect
+    const animation1 = createTwinkle(star1Opacity, star1Scale, 0);
+    const animation2 = createTwinkle(star2Opacity, star2Scale, 200);
+    const animation3 = createTwinkle(star3Opacity, star3Scale, 400);
+    const animation4 = createTwinkle(star4Opacity, star4Scale, 600);
+
+    animation1.start();
+    animation2.start();
+    animation3.start();
+    animation4.start();
+
+    return () => {
+      animation1.stop();
+      animation2.stop();
+      animation3.stop();
+      animation4.stop();
+    };
+  }, []);
+
+  const handleRestorePhoto = () => {
+    // Navigate to the photo selection/upload screen (we'll create this next)
+    router.push('/explore');
+  };
+
+  return (
+    <View style={styles.container}>
+      <StatusBar style="dark" />
+      
+      {/* Header Title */}
+      <View style={styles.header}>
+        <Text style={styles.headerTitle}>Photo Restore AI</Text>
+      </View>
+
+      {/* Main Content */}
+      <View style={styles.content}>
+        {/* Icon Circle */}
+        <View style={styles.iconContainer}>
+          <View style={styles.iconCircle}>
+            <MaterialCommunityIcons name="magic-staff" size={64} color="#00A6ED" />
+            
+            {/* Animated Stars */}
+            <Animated.View
+              style={[
+                styles.star,
+                styles.star1,
+                {
+                  opacity: star1Opacity,
+                  transform: [{ scale: star1Scale }],
+                },
+              ]}
+            >
+              <MaterialCommunityIcons name="star" size={20} color="#FFD700" />
+            </Animated.View>
+
+            <Animated.View
+              style={[
+                styles.star,
+                styles.star2,
+                {
+                  opacity: star2Opacity,
+                  transform: [{ scale: star2Scale }],
+                },
+              ]}
+            >
+              <MaterialCommunityIcons name="star" size={16} color="#FFD700" />
+            </Animated.View>
+
+            <Animated.View
+              style={[
+                styles.star,
+                styles.star3,
+                {
+                  opacity: star3Opacity,
+                  transform: [{ scale: star3Scale }],
+                },
+              ]}
+            >
+              <MaterialCommunityIcons name="star" size={18} color="#FFD700" />
+            </Animated.View>
+
+            <Animated.View
+              style={[
+                styles.star,
+                styles.star4,
+                {
+                  opacity: star4Opacity,
+                  transform: [{ scale: star4Scale }],
+                },
+              ]}
+            >
+              <MaterialCommunityIcons name="star" size={14} color="#FFD700" />
+            </Animated.View>
+          </View>
+        </View>
+
+        {/* Heading */}
+        <Text style={styles.heading}>
+          Bring your memories{'\n'}back to life.
+        </Text>
+
+        {/* Description */}
+        <Text style={styles.description}>
+          Use the power of AI to restore, enhance, and colorize your old family photos instantly.
+        </Text>
+      </View>
+
+      {/* Button */}
+      <View style={styles.buttonContainer}>
+        <TouchableOpacity 
+          style={styles.button}
+          activeOpacity={0.8}
+          onPress={handleRestorePhoto}
+        >
+          <Text style={styles.buttonText}>Restore Photo</Text>
+        </TouchableOpacity>
+      </View>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
+  container: {
+    flex: 1,
+    backgroundColor: '#F5F7FA',
+  },
+  header: {
+    paddingTop: Platform.OS === 'ios' ? 60 : 40,
+    paddingBottom: 20,
     alignItems: 'center',
-    gap: 8,
   },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
+  headerTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#000',
   },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
+  content: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 40,
+  },
+  iconContainer: {
+    marginBottom: 50,
+  },
+  iconCircle: {
+    width: 150,
+    height: 150,
+    borderRadius: 75,
+    backgroundColor: '#C5E8F7',
+    alignItems: 'center',
+    justifyContent: 'center',
+    position: 'relative',
+  },
+  star: {
     position: 'absolute',
+  },
+  star1: {
+    top: 15,
+    right: 20,
+  },
+  star2: {
+    bottom: 20,
+    left: 15,
+  },
+  star3: {
+    top: 25,
+    left: 25,
+  },
+  star4: {
+    bottom: 30,
+    right: 30,
+  },
+  heading: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    color: '#000',
+    textAlign: 'center',
+    marginBottom: 20,
+    lineHeight: 36,
+  },
+  description: {
+    fontSize: 15,
+    color: '#6B7280',
+    textAlign: 'center',
+    lineHeight: 22,
+    paddingHorizontal: 10,
+  },
+  buttonContainer: {
+    paddingHorizontal: 20,
+    paddingBottom: Platform.OS === 'ios' ? 40 : 30,
+  },
+  button: {
+    backgroundColor: '#00A6ED',
+    borderRadius: 12,
+    paddingVertical: 18,
+    alignItems: 'center',
+    shadowColor: '#00A6ED',
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 5,
+  },
+  buttonText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: '600',
   },
 });
