@@ -1,10 +1,10 @@
 # Security & Environment Configuration
 
-## 🔒 Security Setup Complete
+## Security Setup Complete
 
 This project has been configured with proper security measures to protect sensitive information like API keys and user data.
 
-## 📁 Files Protected by .gitignore
+## Files Protected by .gitignore
 
 ### Backend Directory (`backend/.gitignore`)
 The following files and directories are excluded from Git:
@@ -33,7 +33,7 @@ Additional protections at the project root:
 - `node_modules/` - Dependencies
 - `/ios`, `/android` - Generated native folders
 
-## 🔑 Environment Variables
+## Environment Variables
 
 ### Required Configuration
 
